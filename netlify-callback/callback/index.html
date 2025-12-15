@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tesla OAuth Callback</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: #0d0d14;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        h1 { color: #e82127; margin-bottom: 10px; }
+        .success { color: #34c759; }
+        .code-box {
+            background: #1a1a24;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        button {
+            background: linear-gradient(135deg, #e82127, #b91c21);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover { transform: translateY(-2px); }
+        .info { color: #888; font-size: 14px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Tesla OAuth</h1>
+        <div id="content">Loading...</div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const state = params.get('state');
+        const error = params.get('error');
+
+        const content = document.getElementById('content');
+
+        if (error) {
+            content.innerHTML = `
+                <p style="color: #ff4444;">❌ Error: ${error}</p>
+                <p>${params.get('error_description') || ''}</p>
+            `;
+        } else if (code) {
+            content.innerHTML = `
+                <p class="success">✅ Authorization Successful!</p>
+                <p>Copy this code and paste it in your Python script:</p>
+                <div class="code-box" id="codeBox">${code}</div>
+                <button onclick="copyCode()">📋 Copy Code</button>
+                <button onclick="copyFullUrl()">🔗 Copy Full URL</button>
+                <p class="info">State: ${state || 'N/A'}</p>
+            `;
+        } else {
+            content.innerHTML = `
+                <p>No authorization code received.</p>
+                <p class="info">This page is used as a Tesla OAuth callback.</p>
+            `;
+        }
+
+        function copyCode() {
+            navigator.clipboard.writeText(code);
+            alert('Code copied!');
+        }
+
+        function copyFullUrl() {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Full URL copied!');
+        }
+    </script>
+</body>
+</html>
+
